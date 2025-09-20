@@ -14,6 +14,9 @@
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
     />
+
+    <!-- SortableJS -->
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
   </head>
   <body>
     <div class="container mt-5">
@@ -77,6 +80,7 @@
           .forEach((item, index) => {
             const li = document.createElement("li");
             li.className = "list-group-item d-flex align-items-center";
+            li.setAttribute("data-id", index);
 
             const div = document.createElement("div");
             div.className = "flex-fill";
@@ -191,6 +195,19 @@
           .addEventListener("input", renderTodos);
 
         renderTodos();
+
+        // Aktifkan SortableJS (Drag & Drop)
+        const todoList = document.getElementById("todoList");
+        Sortable.create(todoList, {
+          animation: 150,
+          onEnd: function (evt) {
+            // Reorder array sesuai hasil drag
+            const movedItem = todos.splice(evt.oldIndex, 1)[0];
+            todos.splice(evt.newIndex, 0, movedItem);
+            saveTodos();
+            renderTodos();
+          },
+        });
       });
     </script>
   </body>
