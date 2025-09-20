@@ -15,7 +15,7 @@
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
     />
 
-    <!-- SortableJS -->
+    <!-- Library SortableJS untuk fitur drag & drop (CASE: Sorting Todo) -->
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
   </head>
   <body>
@@ -23,7 +23,7 @@
       <h1 class="mb-3">Todo List</h1>
       <hr />
 
-      <!-- Form Tambah -->
+      <!-- Form Tambah Todo (CASE: Menambah todo baru) -->
       <form id="formData" class="mb-3">
         <div class="input-group">
           <input
@@ -38,7 +38,7 @@
         </div>
       </form>
 
-      <!-- Filter dan Search -->
+      <!-- Filter & Search (CASE: Filter dan Pencarian todo) -->
       <div class="d-flex justify-content-between mb-3">
         <div>
           <select id="filter" class="form-select">
@@ -64,6 +64,7 @@
     <script>
       let todos = [];
 
+      // Fungsi renderTodos: Menampilkan todo ke layar
       function renderTodos() {
         const todoList = document.getElementById("todoList");
         const filter = document.getElementById("filter").value;
@@ -71,20 +72,22 @@
         todoList.innerHTML = "";
 
         todos
+          // CASE: Filter selesai / belum selesai
           .filter((item) => {
             if (filter === "completed" && !item.completed) return false;
             if (filter === "pending" && item.completed) return false;
             return true;
           })
+          // CASE: Pencarian dengan mempertahankan filter
           .filter((item) => item.todo.toLowerCase().includes(search))
           .forEach((item, index) => {
             const li = document.createElement("li");
             li.className = "list-group-item d-flex align-items-center";
-            li.setAttribute("data-id", index);
 
             const div = document.createElement("div");
             div.className = "flex-fill";
 
+            // Checkbox (CASE: Tandai todo selesai/belum selesai)
             const checkbox = document.createElement("input");
             checkbox.type = "checkbox";
             checkbox.className = "form-check-input me-2";
@@ -95,6 +98,7 @@
               renderTodos();
             });
 
+            // Label todo (pakai garis coret kalau selesai)
             const label = document.createElement("span");
             label.textContent = item.todo;
             label.style.textDecoration = item.completed
@@ -104,13 +108,14 @@
             div.appendChild(checkbox);
             div.appendChild(label);
 
-            // Tombol edit
+            // CASE: Tombol edit todo tertentu
             const editBtn = document.createElement("button");
             editBtn.className = "btn btn-sm btn-outline-secondary me-2";
             editBtn.innerHTML = '<i class="bi bi-pencil"></i>';
             editBtn.addEventListener("click", () => {
               const newTodo = prompt("Ubah todo:", item.todo);
               if (newTodo && newTodo.trim() !== "") {
+                // CASE: Validasi judul tidak boleh sama
                 if (
                   todos.some(
                     (t, i) =>
@@ -127,7 +132,7 @@
               }
             });
 
-            // Tombol hapus
+            // CASE: Tombol hapus todo
             const deleteBtn = document.createElement("button");
             deleteBtn.className = "btn btn-sm btn-outline-danger";
             deleteBtn.innerHTML = '<i class="bi bi-trash"></i>';
@@ -144,6 +149,7 @@
           });
       }
 
+      // CASE: Simpan todo ke localStorage
       function saveTodos() {
         localStorage.setItem("todos", JSON.stringify(todos));
       }
@@ -151,13 +157,13 @@
       document.addEventListener("DOMContentLoaded", function () {
         const form = document.getElementById("formData");
 
-        // Load dari localStorage
+        // CASE: Load todo dari localStorage
         const storedTodos = localStorage.getItem("todos");
         if (storedTodos) {
           todos = JSON.parse(storedTodos);
         }
 
-        // Tambah todo
+        // CASE: Tambah todo baru
         form.addEventListener("submit", function (event) {
           event.preventDefault();
           const todoInput = form.todo.value.trim();
@@ -167,6 +173,7 @@
             return;
           }
 
+          // CASE: Validasi judul todo agar unik
           if (
             todos.some(
               (item) => item.todo.toLowerCase() === todoInput.toLowerCase()
@@ -186,7 +193,7 @@
           renderTodos();
         });
 
-        // Filter & Search
+        // Event filter & search
         document
           .getElementById("filter")
           .addEventListener("change", renderTodos);
@@ -196,7 +203,7 @@
 
         renderTodos();
 
-        // Aktifkan SortableJS (Drag & Drop)
+        // CASE: Sorting dengan drag & drop (SortableJS)
         const todoList = document.getElementById("todoList");
         Sortable.create(todoList, {
           animation: 150,
